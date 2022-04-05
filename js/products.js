@@ -49,7 +49,7 @@ function listarProductos() {
             .replace('PRODUCT_TITLE', producto.titulo)
             .replace('PRODUCT_DESCRIPTION', producto.descripcion)
             .replace('PRODUCT_PRICE', producto.precio);
-        listaProductosHtml = listaProductosHtml + productoHtml
+        listaProductosHtml = listaProductosHtml + productoHtml;
     }
     return listaProductosHtml;
 }
