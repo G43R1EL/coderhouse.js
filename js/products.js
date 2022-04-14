@@ -57,22 +57,40 @@ function listarProductos() {
 // Agrega items en carrito...
 function agregarItem(idProducto) {
     let producto = productos.find(prod => prod.id == idProducto);
-    if (!existe(idProducto)) {
-        carrito.push(producto);
-        console.log('Producto agregado...');
+    let cantidad = parseInt(prompt('Cuantos queres agregar?', 1));
+
+    if (cantidad >= 1) {
+        if (!existe(idProducto)) {
+            producto.cantidad = cantidad;
+            producto.subtotal = producto.cantidad * producto.precio;
+            carrito.push(producto);
+            console.log('Producto agregado...');
+        } else {
+            let idx = carrito.findIndex(prod => prod.id == idProducto);
+            carrito[idx].cantidad += cantidad;
+            carrito[idx].subtotal = carrito[idx].cantidad * carrito[idx].precio;
+            console.log('Ya existe el producto... Se suman mas. ' + carrito[idx].cantidad);
+        }
     } else {
-        console.log('Ya existe el producto... No agregado.');
+        console.log('Debe ingresar un valor numerico');
     }
 }
 
 // Quita items del carrito
 function eliminarItem(idProducto) {
-    if (existe(idProducto)) {
+    let cantidad = parseInt(prompt('Cuantos queres quitar?', 1));
+    if (existe(idProducto) && cantidad > 0) {
         let indiceProducto = carrito.findIndex( prod => prod.id == idProducto );
-        carrito.splice(indiceProducto,1);
-        console.log('Producto eliminado...');
+        if (carrito[indiceProducto].cantidad > cantidad) {
+            carrito[indiceProducto].cantidad -= cantidad;
+            carrito[indiceProducto].subtotal = carrito[indiceProducto].cantidad * carrito[indiceProducto].precio;
+            console.log('Se quitaron ' + cantidad + '... Quedan ' + carrito[indiceProducto].cantidad);
+        } else {
+            carrito.splice(indiceProducto,1);
+            console.log('Producto eliminado...');
+        }
     } else {
-        console.log('El producto no se encuentra en el carrito... Nothing to do here xD');
+        console.log('El producto no se encuentra en el carrito o no ingreso una cantidad numerica para quitar... Nothing to do here xD');
     }
 }
 
@@ -88,10 +106,10 @@ function existe(idProducto) {
 // Muestra lista de productos y total de la cuenta
 function checkOut () {
     let total = 0;
-    console.log('Producto - Precio');
+    console.log('Producto - Precio - Cantidad - Subtotal');
     for (producto of carrito) {
-        console.log(producto.titulo + ' - $' + producto.precio);
-        total = total + Number(producto.precio);
+        console.log(producto.titulo + ' - $' + producto.precio + ' - ' + producto.cantidad + ' - ' + producto.subtotal);
+        total = total + Number(producto.subtotal);
     }
     console.log('Total : $' + total);
 }
