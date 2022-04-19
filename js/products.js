@@ -33,22 +33,16 @@ const productos = [
 
 // Toma la variable productos y genera con ella el html necesario para armar tarjetas de producto.
 function listarProductos() {
-    let listaProductosHtml = '';
+    let listaProductosHtml = '<div class="popup__message"></div>\n'+
+                             '<div class="popup__checkout"></div>\n';
     for  ( producto of productos ) {
-        let productoHtml = '<div class="product_card" id="PRODUCT_ID">\n'+
-                           '<img src="PRODUCT_IMAGE" alt="no_image">\n'+
-                           '<h2>PRODUCT_TITLE</h2>\n'+
-                           '<p>PRODUCT_DESCRIPTION</p>\n'+
-                           '<span><b>Precio:</b> $PRODUCT_PRICE-</span>\n'+
-                           '<button onClick="agregarItem(this.parentNode.id)">Agregar</button><button onClick="eliminarItem(this.parentNode.id)">Eliminar</button>\n'+
-                           '</div>';
-        productoHtml = productoHtml
-            .replace('PRODUCT_ID', producto.id)
-            .replace('PRODUCT_ID', producto.id)
-            .replace('PRODUCT_IMAGE', producto.imagen)
-            .replace('PRODUCT_TITLE', producto.titulo)
-            .replace('PRODUCT_DESCRIPTION', producto.descripcion)
-            .replace('PRODUCT_PRICE', producto.precio);
+        let productoHtml = `<div class="product_card" id="${producto.id}">\n`+
+                           `<img src="${producto.imagen}" alt="no_image">\n`+
+                           `<h2>${producto.titulo}</h2>\n`+
+                           `<p>${producto.descripcion}</p>\n`+
+                           `<span><b>Precio:</b>$ ${producto.precio}-</span>\n`+
+                           `<button onClick="agregarItem(this.parentNode.id)">Agregar</button><button onClick="eliminarItem(this.parentNode.id)">Eliminar</button>\n`+
+                           `</div>\n`;
         listaProductosHtml = listaProductosHtml + productoHtml;
     }
     return listaProductosHtml;
@@ -58,40 +52,49 @@ function listarProductos() {
 function agregarItem(idProducto) {
     let producto = productos.find(prod => prod.id == idProducto);
     let cantidad = parseInt(prompt('Cuantos queres agregar?', 1));
-
+    let item = document.querySelector('.popup__message');
+    let message = '<p>lorem ipsum dolor sit amet</p>';
     if (cantidad >= 1) {
         if (!existe(idProducto)) {
             producto.cantidad = cantidad;
             producto.subtotal = producto.cantidad * producto.precio;
             carrito.push(producto);
-            console.log('Producto agregado...');
+            message = 'Producto/s agregado...';
         } else {
             let idx = carrito.findIndex(prod => prod.id == idProducto);
             carrito[idx].cantidad += cantidad;
             carrito[idx].subtotal = carrito[idx].cantidad * carrito[idx].precio;
-            console.log('Ya existe el producto... Se suman mas. ' + carrito[idx].cantidad);
+            message = 'Ya existe el producto... Se suman mas. ' + carrito[idx].cantidad;
         }
     } else {
-        console.log('Debe ingresar un valor numerico');
+        message = 'Debe ingresar un valor numerico';
     }
+    item.innerHTML = message;
+    item.style.display = 'flex';
+    setTimeout ( function () { item.style.display='none' }, 1000 );
 }
 
 // Quita items del carrito
 function eliminarItem(idProducto) {
     let cantidad = parseInt(prompt('Cuantos queres quitar?', 1));
+    let item = document.querySelector('.popup__message');
+    let message = '<p>lorem ipsum dolor sit amet</p>';
     if (existe(idProducto) && cantidad > 0) {
         let indiceProducto = carrito.findIndex( prod => prod.id == idProducto );
         if (carrito[indiceProducto].cantidad > cantidad) {
             carrito[indiceProducto].cantidad -= cantidad;
             carrito[indiceProducto].subtotal = carrito[indiceProducto].cantidad * carrito[indiceProducto].precio;
-            console.log('Se quitaron ' + cantidad + '... Quedan ' + carrito[indiceProducto].cantidad);
+            message = 'Se quitaron ' + cantidad + '... Quedan ' + carrito[indiceProducto].cantidad
         } else {
             carrito.splice(indiceProducto,1);
-            console.log('Producto eliminado...');
+            message = 'Producto eliminado...';
         }
     } else {
-        console.log('El producto no se encuentra en el carrito o no ingreso una cantidad numerica para quitar... Nothing to do here xD');
+        message = 'El producto no se encuentra en el carrito o no ingreso una cantidad numerica para quitar... Nothing to do here xD'
     }
+    item.innerHTML = message;
+    item.style.display = 'flex';
+    setTimeout ( function () { item.style.display='none' }, 1000 );
 }
 
 // Verifica si un elemento ya existe en el carrito.
@@ -105,13 +108,28 @@ function existe(idProducto) {
 
 // Muestra lista de productos y total de la cuenta
 function checkOut () {
+    let item = document.querySelector('.popup__checkout');
+    let message = '';
+    let tabla = '<table>\n'+
+                '<tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr>\n';
     let total = 0;
     console.log('Producto - Precio - Cantidad - Subtotal');
     for (producto of carrito) {
-        console.log(producto.titulo + ' - $' + producto.precio + ' - ' + producto.cantidad + ' - ' + producto.subtotal);
+        elementoLista = '<li>' + producto.titulo + ' - $' + producto.precio + ' - ' + producto.cantidad + ' - ' + producto.subtotal + '</li>\n';
+        tabla = tabla + `<tr><td>${producto.titulo}</td><td>${producto.precio}</td><td>${producto.cantidad}</td><td>${producto.subtotal}</td></tr>`;
         total = total + Number(producto.subtotal);
     }
-    console.log('Total : $' + total);
+    tabla = tabla + '</table>\n';
+    tabla = tabla + '<p>' + 'Total : $' + total + '</p>\n';
+    message = tabla + '\n<button id="close__button" onClick="cerrarPopup()">Cerrar</button>';
+    item.innerHTML = message;
+    item.style.display = 'flex';
+}
+
+// Oculta popup de CheckOut
+const cerrarPopup = () => {
+    let popup = document.querySelector('.popup__checkout');
+    popup.style.display = 'none';
 }
 
 // Carrito de compras
