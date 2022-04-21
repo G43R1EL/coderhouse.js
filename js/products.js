@@ -35,7 +35,7 @@ const productos = [
 function listarProductos() {
     let listaProductosHtml = '<div class="popup__message"></div>\n'+
                              '<div class="popup__checkout"></div>\n';
-    for  ( producto of productos ) {
+    for  ( const producto of productos ) {
         let productoHtml = `<div class="product_card" id="${producto.id}">\n`+
                            `<img src="${producto.imagen}" alt="no_image">\n`+
                            `<h2>${producto.titulo}</h2>\n`+
