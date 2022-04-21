@@ -124,6 +124,7 @@ function checkOut () {
     message = tabla + '\n<button id="close__button" onClick="cerrarPopup()">Cerrar</button>';
     item.innerHTML = message;
     item.style.display = 'flex';
+    document.addEventListener("keyup", event => { if ( event.key === "Escape" ) { cerrarPopup() }});
 }
 
 // Oculta popup de CheckOut
